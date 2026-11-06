@@ -1,0 +1,5 @@
+[local-web01]
+name=Internal Repo via web01
+baseurl=http://192.168.10.111/repo/rocky10/local
+enabled=1
+gpgcheck=0
