@@ -1,4 +1,4 @@
-> 이 문서는 `3tier-rocky10-guide-v16.md` 의 228~340줄을 그대로 옮긴 것이다. 비밀번호와 로컬 경로만 자리표시자로 바꿨다.
+> 이 문서는 `3tier-rocky10-guide-v16.md` 의 228~340줄을 옮겨 공개용으로 문장을 다듬은 것이다. 코드, 명령, 출력, 설정값은 원본 그대로이고, 비밀번호와 로컬 경로만 자리표시자로 바꿨다.
 
 ## 1. 호스트 PC 사전 준비
 
@@ -7,17 +7,17 @@ vboxmanage --version
 vagrant --version
 ```
 
-**Rocky Linux 10 박스 받기 — 알아두어야 할 점**
+**Rocky Linux 10 박스 받기: 알아두어야 할 점**
 
-Vagrant Cloud에 등록된 `rockylinux/10` 박스는 실제 파일을 가리키는 링크가 깨져 있어(버전 `0.0.0`, 다운로드 시 `404`) 그냥 `vagrant up`을 실행하면 실패합니다. 아래 2장의 Vagrantfile은 Rocky 공식 미러의 실제 파일 URL을 `config.vm.box_url`로 직접 지정해 이 문제를 우회합니다. 시간이 지나 파일명이 바뀌어 다시 404가 나면 https://dl.rockylinux.org/pub/rocky/10/images/x86_64/ 에서 최신 `Rocky-10-Vagrant-Vbox-*.x86_64.vagrant.virtualbox.box` 파일명을 확인해 `box_url` 값만 교체하면 됩니다.
+Vagrant Cloud에 등록된 `rockylinux/10` 박스는 실제 파일을 가리키는 링크가 깨져 있어(버전 `0.0.0`, 다운로드 시 `404`) 그냥 `vagrant up`을 실행하면 실패한다. 아래 2장의 Vagrantfile은 Rocky 공식 미러의 실제 파일 URL을 `config.vm.box_url`로 직접 지정해 이 문제를 우회한다. 시간이 지나 파일명이 바뀌어 다시 404가 나면 https://dl.rockylinux.org/pub/rocky/10/images/x86_64/ 에서 최신 `Rocky-10-Vagrant-Vbox-*.x86_64.vagrant.virtualbox.box` 파일명을 확인해 `box_url` 값만 교체하면 된다.
 
-**CPU 요구사항**: Rocky Linux 10부터 x86-64-v3(AVX2 등) 이상 필요. VM이 부팅 직후 커널 패닉이 나면 이 조건부터 의심하세요.
+**CPU 요구사항**: Rocky Linux 10부터 x86-64-v3(AVX2 등) 이상이 필요하다. VM이 부팅 직후 커널 패닉이 나면 이 조건부터 의심한다.
 
 ---
 
 ## 2. Vagrantfile 작성
 
-**이유**: 3대(web01/was01/db01)를 매번 수동으로 만들지 않고, 이름·IP·리소스만 바뀌는 반복 구조이므로 Ruby 해시로 정의해 `each`로 반복 생성합니다. 관리망은 Vagrant의 `private_network` 기능으로 자동 설정하고, 서비스망용 NIC 2장은 `VBoxManage`로 직접 추가한 뒤 게스트 안에서 수동으로 bond0을 구성합니다(자동화 기능이 본딩까지는 지원하지 않기 때문).
+**이유**: 3대(web01/was01/db01)를 매번 수동으로 만들지 않고, 이름, IP, 리소스만 바뀌는 반복 구조이므로 Ruby 해시로 정의해 `each`로 반복 생성한다. 관리망은 Vagrant의 `private_network` 기능으로 자동 설정하고, 서비스망용 NIC 2장은 `VBoxManage`로 직접 추가한 뒤 게스트 안에서 수동으로 bond0을 구성한다(자동화 기능이 본딩까지는 지원하지 않기 때문).
 
 ```ruby
 require 'fileutils'
@@ -100,11 +100,11 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-> ⚠️ **v16 — `vagrant up` 타임아웃(`Timed out while waiting for the machine to boot`)**: 위 Vagrantfile의 `config.vm.boot_timeout = 900` 두 줄이 없으면 Vagrant는 300초만 기다리고 포기합니다. 이 문서의 이전 버전(v15)에는 이 줄이 없어서 web01·db01·web02·was02 모두에서 재현됐습니다. 이미 VM을 만든 뒤라면 위 두 줄만 추가하고 `vagrant reload <이름>`으로 반영하세요(VM 디스크는 그대로입니다). 타임아웃이 나도 VM 자체는 떠 있는 경우가 대부분이라 `vagrant ssh <이름>`이 되는지부터 확인하세요 — 다만 `vagrant up`이 중간에 끝난 VM은 호스트명(`localhost.localdomain`)과 관리망 IP가 자동 설정되지 않았을 수 있습니다(§3-1, §3-3).
+> ⚠️ **v16: `vagrant up` 타임아웃(`Timed out while waiting for the machine to boot`)**: 위 Vagrantfile의 `config.vm.boot_timeout = 900` 두 줄이 없으면 Vagrant는 300초만 기다리고 포기한다. 이 문서의 이전 버전(v15)에는 이 줄이 없어서 web01, db01, web02, was02 모두에서 재현됐다. 이미 VM을 만든 뒤라면 위 두 줄만 추가하고 `vagrant reload <이름>`으로 반영한다(VM 디스크는 그대로다). 타임아웃이 나도 VM 자체는 떠 있는 경우가 대부분이라 `vagrant ssh <이름>`이 되는지부터 확인한다. 다만 `vagrant up`이 중간에 끝난 VM은 호스트명(`localhost.localdomain`)과 관리망 IP가 자동 설정되지 않았을 수 있다(§3-1, §3-3).
 
-> `--storagectl "SATA Controller"` 이름이 박스마다 다를 수 있습니다. 오류가 나면 `VBoxManage showvminfo 3t-r10-db01 | grep "Storage Controller Name"`으로 실제 이름을 확인해 바꿔주세요.
+> `--storagectl "SATA Controller"` 이름이 박스마다 다를 수 있다. 오류가 나면 `VBoxManage showvminfo 3t-r10-db01 | grep "Storage Controller Name"`으로 실제 이름을 확인해 바꾼다.
 
-> **v16 — `--paravirtprovider kvm` (권장)**: VirtualBox 기본 설정에서는 게스트가 TSC를 `unstable`로 판정해 `acpi_pm`을 시계로 쓰는데, 이 PC에서는 그 상태에서 시계가 초 단위로 튀고 유휴 부하가 컸습니다(§5-8, §16-10). 위 `vb.customize` 한 줄을 넣고 처음부터 만들면 됩니다. **이미 만든 VM**에는 꺼진 상태에서 `vagrant halt <이름>` → `VBoxManage modifyvm 3t-r10-<이름> --paravirtprovider kvm` → `vagrant up <이름>`으로 적용합니다. 재현 기록에서는 이 `modifyvm` 방식으로 web01·was01·db01에 적용해 세 대 모두 `tsc`가 됐습니다. 위 Vagrantfile의 `vb.customize` 한 줄 형태로 처음부터 만든 기록은 아직 없어 **미실행**입니다.
+> **v16: `--paravirtprovider kvm` (권장)**: VirtualBox 기본 설정에서는 게스트가 TSC를 `unstable`로 판정해 `acpi_pm`을 시계로 쓰는데, 이 PC에서는 그 상태에서 시계가 초 단위로 튀고 유휴 부하가 컸다(§5-8, §16-10). 위 `vb.customize` 한 줄을 넣고 처음부터 만들면 된다. **이미 만든 VM**에는 꺼진 상태에서 `vagrant halt <이름>` → `VBoxManage modifyvm 3t-r10-<이름> --paravirtprovider kvm` → `vagrant up <이름>`으로 적용한다. 재현 기록에서는 이 `modifyvm` 방식으로 web01, was01, db01에 적용해 세 대 모두 `tsc`가 됐다. 위 Vagrantfile의 `vb.customize` 한 줄 형태로 처음부터 만든 기록은 아직 없어 **미실행**이다.
 
 ```bash
 vagrant up
