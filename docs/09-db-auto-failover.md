@@ -145,7 +145,7 @@ sudo pcs constraint order promote pgsqld-clone then start db_vip kind=Mandatory
 
 **시나리오**: db02(Primary)를 하드 poweroff(2026-09-07 ~09:56 UTC) → db01이 사람 개입 없이 자동 승격되는지 확인했다.
 
-**결과: 자동 승격이 되지 않았다. 앱은 1시간+ 다운됐다.**
+**결과: 자동 승격이 되지 않았다. 앱이 1시간 넘게 멈췄다.**
 
 **타임라인과 근본 원인**:
 1. **bond0/intnet 네트워크가 종일 flapping했다**. corosync 멤버십 churn이 다수 발생했고, `"Resetting MTU because host 2 joined"`가 반복됐다.
